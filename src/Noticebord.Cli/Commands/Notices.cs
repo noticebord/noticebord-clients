@@ -2,31 +2,27 @@ using System;
 using System.Threading.Tasks;
 using Cocona;
 using Noticebord.Cli.Filters;
+using Noticebord.Cli.Utils;
 using Noticebord.Client;
-using static Noticebord.Cli.Commands.Notices.OutputFormats;
+using static Noticebord.Cli.Utils.Output;
+using static Noticebord.Cli.Utils.Output.OutputFormats;
 
 namespace Noticebord.Cli.Commands
 {
     public class Notices
     {
-        public enum OutputFormats
-        {
-            Text,
-            Json
-        }
-
         [BannerCommandFilter]
         [PrimaryCommand]
         [Command(Description = "Fetch and display all notices.")]
         public async Task List(
             [FromService]IClient client,
-            [Option('f', Description = "Specify output format.")]OutputFormats format = Text)
+            [Option('f', Description = "Specify output format.")]OutputFormats format = Text,
+            [Option('s', Description = "Write output to file.")]bool save = false)
         {
             var notices = await client.GetNoticesAsync();
-            foreach (var notice in notices)
-            {
-                Console.WriteLine(notice.Title);
-            }
+
+            if (save) await Output.ExportManyAsync(notices, format);
+            else Output.DisplayMany(notices, format);
         }
 
         [BannerCommandFilter]
@@ -34,10 +30,13 @@ namespace Noticebord.Cli.Commands
         public async Task Get(
             [FromService]IClient client, 
             [Argument(Description = "ID of the notice to fetch.")]long id,
-            [Option('f', Description = "Specify output format.")]OutputFormats format = Text)
+            [Option('f', Description = "Specify output format.")]OutputFormats format = Text,
+            [Option('s', Description = "Write output to file.")]bool save = false)
         {
             var notice = await client.GetNoticeAsync(id);
-            Console.WriteLine($"{notice.Title}\n\n{notice.Text}");
+
+            if (save) await Output.ExportAsync(notice, format);
+            else Output.Display(notice, format);
         }
     }
 }
