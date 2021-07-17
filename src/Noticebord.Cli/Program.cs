@@ -1,8 +1,14 @@
-﻿using Noticebord.Cli.Commands;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Noticebord.Cli.Commands;
+using Noticebord.Cli.Infrastructure;
 using Noticebord.Cli.Settings;
+using Noticebord.Client;
 using Spectre.Console.Cli;
 
-var app = new CommandApp();
+var registrations = new ServiceCollection();
+registrations.AddSingleton<IClient, NoticebordClient>();
+
+var app = new CommandApp(new TypeRegistrar(registrations));
 
 app.Configure(config =>
 {
