@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Noticebord.Cli.Settings;
 using Noticebord.Client;
+using Noticebord.Client.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -18,14 +21,15 @@ namespace Noticebord.Cli.Commands
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListNoticesSettings settings)
         {
-            var notices = await _client.GetNoticesAsync();
+            var notices = await AnsiConsole.Status()
+                .StartAsync("Fetching...", async ctx => await _client.GetNoticesAsync());
             var table = new Table();
 
-            table.AddColumn(new ("[bold yellow]ID[/]"));
-            table.AddColumn(new ("[bold yellow]Title[/]"));
-            table.AddColumn(new ("[bold yellow]Author[/]"));
-            table.AddColumn(new ("[bold yellow]Created At[/]"));
-            table.AddColumn(new ("[bold yellow]Updated At[/]"));
+            table.AddColumn(new("[bold yellow]ID[/]"));
+            table.AddColumn(new("[bold yellow]Title[/]"));
+            table.AddColumn(new("[bold yellow]Author[/]"));
+            table.AddColumn(new("[bold yellow]Created At[/]"));
+            table.AddColumn(new("[bold yellow]Updated At[/]"));
 
             notices.ForEach(n =>
                 table.AddRow(

@@ -17,7 +17,8 @@ namespace Noticebord.Cli.Commands
 
         public override async Task<int> ExecuteAsync(CommandContext context, ShowNoticeSettings settings)
         {
-            var notice = await _client.GetNoticeAsync(settings.Notice);
+            var notice = await AnsiConsole.Status()
+                .StartAsync("Fetching...", async ctx => await _client.GetNoticeAsync(settings.Notice));
 
             AnsiConsole.MarkupLine($"[bold yellow]{notice.Title}[/]");
             AnsiConsole.MarkupLine($"By [bold yellow]{notice.Author.Name}[/]");
