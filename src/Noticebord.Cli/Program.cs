@@ -1,33 +1,29 @@
-﻿using System;
-using Figgle;
-using Cocona;
-using Microsoft.Extensions.DependencyInjection;
-using Noticebord.Cli.Filters;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Noticebord.Cli.Commands;
+using Noticebord.Cli.Infrastructure;
+using Noticebord.Cli.Settings;
 using Noticebord.Client;
+using Spectre.Console.Cli;
 
-namespace Noticebord.Cli
+var registrations = new ServiceCollection();
+registrations.AddSingleton<IClient, NoticebordClient>();
+
+var app = new CommandApp(new TypeRegistrar(registrations));
+
+app.Configure(config =>
 {
-    [HasSubCommands(typeof(Notices), Description = "Commands dealing with notices.")]
-    public class Program
+    config.AddBranch<NoticesSettings>("notices", notices =>
     {
-        public static void Main(string[] args) => CoconaApp.Create()
-            .ConfigureServices(services =>
-            {
-                services.AddTransient<IClient, NoticebordClient>();
-            })
-            .Run<Program>(args);
+        notices.AddCommand<ListNoticesCommand>("list")
+            .WithDescription("List all notices")
+            .WithExample(new []{"notices", "list"});
+        notices.AddCommand<ShowNoticeCommand>("show")
+            .WithDescription("Show a single notice by its ID")
+            .WithExample(new []{"notices", "show", "1"});
+    });
+});
 
-        [BannerCommandFilter]
-        [Command(Description = "Display application information.")]
-        public void Info(){
-            var info = $"Noticebord 1.0.0 (cli) (built: {DateTime.Now}) ( .NET {Environment.Version} x64 )\n" +
-                "Copyright (c) The Noticebord Group\n" +
-                "Noticebord 1.0.0, Copyright (c) Noticebord Technologies";
-            Console.WriteLine(info);
-        } 
-    }
-}
+return app.Run(args);
 
 
 
