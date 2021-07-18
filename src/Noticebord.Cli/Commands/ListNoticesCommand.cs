@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Noticebord.Cli.Settings;
 using Noticebord.Client;
-using Noticebord.Client.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -31,13 +27,13 @@ namespace Noticebord.Cli.Commands
             table.AddColumn(new("[bold yellow]Created At[/]"));
             table.AddColumn(new("[bold yellow]Updated At[/]"));
 
-            notices.ForEach(n =>
-                table.AddRow(
-                    n.Id.ToString(),
-                    n.Title,
-                    n.Author.Name,
-                    n.CreatedAt.ToString(),
-                    n.UpdatedAt.ToString()));
+            notices.ForEach(n => table.AddRow(
+                n.Id.ToString(),
+                n.Title,
+                n.Author.Name,
+                n.CreatedAt.ToString(),
+                n.UpdatedAt.ToString())
+            );
 
             AnsiConsole.Render(table);
             return 0;
