@@ -31,7 +31,7 @@ namespace Noticebord.Cli.Commands
                     .Validate(username => IsValidEmail(username),
                         "[red]Username must be a valid email address[/]"));
                 password = AnsiConsole.Prompt(new TextPrompt<string>("Enter your password:").Secret());
-                deviceName = AnsiConsole.Ask<string>("Enter a name for this device:", Environment.MachineName);
+                deviceName = AnsiConsole.Ask("Enter a name for this device:", Environment.MachineName);
             }
 
             var token = await AnsiConsole.Status()
@@ -44,7 +44,7 @@ namespace Noticebord.Cli.Commands
             path = Path.Combine(path, "token.txt");
             await File.WriteAllTextAsync(path, token);
 
-            AnsiConsole.Markup($"Logged in as [bold yellow]{username}.[/]");
+            AnsiConsole.MarkupLine($"Logged in as [bold yellow]{username}.[/]");
             return 0;
         }
 
@@ -61,16 +61,16 @@ namespace Noticebord.Cli.Commands
             }
 
             if (string.IsNullOrWhiteSpace(settings.Username))
-                return ValidationResult.Error("Username must provided in non-interactive mode.");
+                return ValidationResult.Error("Username must be provided in non-interactive mode.");
 
             if (!IsValidEmail(settings.Username))
                 return ValidationResult.Error("Username must be a valid email address.");
 
             if (string.IsNullOrWhiteSpace(settings.Password))
-                return ValidationResult.Error("Password must provided in non-interactive mode.");
+                return ValidationResult.Error("Password must be provided in non-interactive mode.");
 
             if (string.IsNullOrWhiteSpace(settings.DeviceName))
-                return ValidationResult.Error("Device name must provided in non-interactive mode.");
+                return ValidationResult.Error("Device name must be provided in non-interactive mode.");
 
             return base.Validate(context, settings);
         }

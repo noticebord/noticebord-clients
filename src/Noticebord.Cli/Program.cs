@@ -14,6 +14,14 @@ app.Configure(config =>
 {
     config.AddBranch<NoticesSettings>("notices", notices =>
     {
+        notices.AddCommand<CreateNoticeCommand>("create")
+            .WithDescription("Create a new notice")
+            .WithExample(new[] { "notices", "create", "--interactive" })
+            .WithExample(new[] {
+                "notices", "create",
+                "--title", "Hi Everyone!",
+                "--text", "This is an awesome notice."
+            });
         notices.AddCommand<ListNoticesCommand>("list")
             .WithDescription("List all notices")
             .WithExample(new[] { "notices", "list" });
@@ -25,7 +33,12 @@ app.Configure(config =>
     config.AddCommand<LoginCommand>("login")
             .WithDescription("Log in to your account")
             .WithExample(new[] { "login", "--interactive" })
-            .WithExample(new[] { "login", "--username", "user@mail.com", "--password", "password" });
+            .WithExample(new[] {
+                "login",
+                "--username", "user@mail.com",
+                "--password", "password",
+                "--device-name", "My Windows PC"
+            });
 });
 
 return app.Run(args);

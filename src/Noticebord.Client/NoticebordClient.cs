@@ -26,6 +26,15 @@ namespace Noticebord.Client
                 }, cancellationToken)
                 .ReceiveString();
 
+        public async Task<Notice> CreateNoticeAsync(
+            string title,
+            string text,
+            string token,
+            CancellationToken cancellationToken = default) =>
+            await _baseurl.AppendPathSegment("notices")
+                .WithHeader("Authorization", $"Bearer {token}")
+                .PostJsonAsync(new { title, text }, cancellationToken)
+                .ReceiveJson<Notice>();
 
         public async Task<Notice> GetNoticeAsync(long id, CancellationToken cancellationToken = default) =>
             await _baseurl.AppendPathSegment("notices").AppendPathSegment(id).GetJsonAsync<Notice>(cancellationToken);
