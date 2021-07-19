@@ -16,5 +16,9 @@ namespace Noticebord.Cli.Settings
         [CommandOption("-p|--password <PASSWORD>")]
         [Description("Password to authenticate with")]
         public string Password { get; set; }
+
+        [CommandOption("-d|--device-name <DEVICE_NAME>")]
+        [Description("Name of this device, e.g. My HP Laptop")]
+        public string DeviceName { get; set; }
     }
 }

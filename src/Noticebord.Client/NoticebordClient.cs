@@ -12,16 +12,25 @@ namespace Noticebord.Client
     {
         private const string _baseurl = "https://noticebord.herokuapp.com/api";
 
-        public async Task<string> AuthorizeAsync(string username, string password, CancellationToken cancellationToken = default)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
-            return string.Empty;
-        }
+        public async Task<string> AuthorizeAsync(
+            string email,
+            string password,
+            string deviceName,
+            CancellationToken cancellationToken = default) =>
+            await _baseurl.AppendPathSegment("tokens")
+                .PostJsonAsync(new
+                {
+                    email,
+                    password,
+                    device_name = deviceName
+                }, cancellationToken)
+                .ReceiveString();
+
 
         public async Task<Notice> GetNoticeAsync(long id, CancellationToken cancellationToken = default) =>
-            await _baseurl.AppendPathSegment("notices").AppendPathSegment(id).GetJsonAsync<Notice>();
+            await _baseurl.AppendPathSegment("notices").AppendPathSegment(id).GetJsonAsync<Notice>(cancellationToken);
 
         public async Task<List<Notice>> GetNoticesAsync(CancellationToken cancellationToken = default) =>
-            await _baseurl.AppendPathSegment("notices").GetJsonAsync<List<Notice>>();
+            await _baseurl.AppendPathSegment("notices").GetJsonAsync<List<Notice>>(cancellationToken);
     }
 }
