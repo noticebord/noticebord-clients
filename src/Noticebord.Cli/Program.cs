@@ -1,12 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using Noticebord.Cli.Commands;
 using Noticebord.Cli.Infrastructure;
 using Noticebord.Cli.Settings;
 using Noticebord.Client;
 using Spectre.Console.Cli;
 
+string? token = default;
+
+var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "noticebord", "token");
+if (File.Exists(path))
+    token = await File.ReadAllTextAsync(path);
+
 var registrations = new ServiceCollection();
-registrations.AddSingleton<IClient, NoticebordClient>();
+registrations.AddSingleton<IClient>(_ => new NoticebordClient(token));
 
 var app = new CommandApp(new TypeRegistrar(registrations));
 
@@ -36,9 +44,12 @@ app.Configure(config =>
             .WithExample(new[] {
                 "login",
                 "--username", "user@mail.com",
-                "--password", "password",
-                "--device-name", "My Windows PC"
+                "--password", "password"
             });
+
+    config.AddCommand<LogoutCommand>("logout")
+            .WithDescription("Log out of your account")
+            .WithExample(new[] { "logout" });
 });
 
 return app.Run(args);

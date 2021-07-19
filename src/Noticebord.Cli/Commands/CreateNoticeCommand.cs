@@ -1,8 +1,9 @@
 using System;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Noticebord.Cli.Settings;
 using Noticebord.Client;
+using Noticebord.Client.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -11,39 +12,31 @@ namespace Noticebord.Cli.Commands
     public class CreateNoticeCommand : AsyncCommand<CreateNoticeSettings>
     {
         private readonly IClient _client;
-        private readonly string _path = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-            "noticebord", 
-            "token.txt");
 
         public CreateNoticeCommand(IClient client)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, CreateNoticeSettings settings)
+        public override async Task<int> ExecuteAsync([NotNull]CommandContext context, [NotNull] CreateNoticeSettings settings)
         {
-            var title = settings.Title;
-            var body = settings.Body;
-
-            if (settings.Interactive)
-            {
-                title = AnsiConsole.Ask<string>("Enter a title for this notice:");
-                body = AnsiConsole.Ask<string>("Enter the body for this notice:");
-            }
-
-            var token = await File.ReadAllTextAsync(_path);
+            CreateNoticeRequest request = (!settings.Interactive) 
+                ? new(settings.Title!, settings.Body!)
+                : new(
+                    AnsiConsole.Ask<string>("Enter a title for this notice:"),
+                    AnsiConsole.Ask<string>("Enter the body for this notice:")
+                );
 
             var notice = await AnsiConsole.Status()
-                .StartAsync("Creating...", async ctx => await _client.CreateNoticeAsync(title, body, token));
+                .StartAsync("Creating...", async ctx => await _client.CreateNoticeAsync(request));
 
             AnsiConsole.MarkupLine($"Notice [bold yellow]#{notice.Id} - {notice.Title}[/] was created.");
             return 0;
         }
 
-        public override ValidationResult Validate(CommandContext context, CreateNoticeSettings settings)
+        public override ValidationResult Validate([NotNull]CommandContext context, [NotNull]CreateNoticeSettings settings)
         {
-            if (!File.Exists(_path))
+            if (!_client.IsAuthenticated)
                 return ValidationResult.Error("You must be logged in to perform this action.");
 
             if (settings.Interactive)

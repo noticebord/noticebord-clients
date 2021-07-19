@@ -7,6 +7,6 @@ namespace Noticebord.Cli.Settings
     {
         [CommandArgument(0, "<NOTICE>")]
         [Description("ID of notice to show")]
-        public long Notice { get; set; }
+        public long Notice { get; init; }
     }
 }

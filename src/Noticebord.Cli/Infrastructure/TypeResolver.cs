@@ -1,4 +1,4 @@
-  
+
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
@@ -14,8 +14,9 @@ namespace Noticebord.Cli.Infrastructure
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
-        public object Resolve(Type type)
+        public object? Resolve(Type? type)
         {
+            if (type is null) return null;
             return _provider.GetRequiredService(type);
         }
 

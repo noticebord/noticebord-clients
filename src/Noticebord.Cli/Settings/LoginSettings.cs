@@ -7,18 +7,14 @@ namespace Noticebord.Cli.Settings
     {
         [CommandOption("-i|--interactive")]
         [Description("Use interactive mode")]
-        public bool Interactive { get; set; }
+        public bool Interactive { get; init; }
 
-        [CommandOption("-u|--username <USERNAME>")]
-        [Description("Username to authenticate with")]
-        public string Username { get; set; }
+        [CommandOption("-e|--email-address <EMAIL_ADDRESS>")]
+        [Description("Email address to authenticate with")]
+        public string? Email { get; init; }
 
         [CommandOption("-p|--password <PASSWORD>")]
         [Description("Password to authenticate with")]
-        public string Password { get; set; }
-
-        [CommandOption("-d|--device-name <DEVICE_NAME>")]
-        [Description("Name of this device, e.g. My HP Laptop")]
-        public string DeviceName { get; set; }
+        public string? Password { get; init; }
     }
 }
