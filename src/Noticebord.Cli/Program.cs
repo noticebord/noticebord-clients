@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Flurl.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Noticebord.Cli.Commands;
 using Noticebord.Cli.Infrastructure;
@@ -9,12 +10,19 @@ using Spectre.Console.Cli;
 
 string? token = default;
 
-var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "noticebord", "token");
+var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "noticebord", "token.txt");
 if (File.Exists(path))
     token = await File.ReadAllTextAsync(path);
 
+var noticebordClient = new NoticebordClient(token);
+
+FlurlHttp.ConfigureClient(noticebordClient.BaseUrl, client => {
+    client.HttpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.HttpClient.DefaultRequestHeaders.Add("User-Agent", "Noticebord.Cli");
+});
+
 var registrations = new ServiceCollection();
-registrations.AddSingleton<IClient>(_ => new NoticebordClient(token));
+registrations.AddSingleton<IClient>(_ => noticebordClient);
 
 var app = new CommandApp(new TypeRegistrar(registrations));
 

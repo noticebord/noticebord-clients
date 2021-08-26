@@ -7,7 +7,7 @@ namespace Noticebord.Client
 {
     public interface IClient
     {
-        public bool IsAuthenticated { get; }
+        public bool IsLoggedIn { get; }
         public string? Token { get; }
 
         public Task<string> AuthenticateAsync(AuthenticateRequest request, CancellationToken cancellationToken = default);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,44 +10,50 @@ namespace Noticebord.Client
 {
     public class NoticebordClient : IClient
     {
-        private readonly string _baseurl = "https://noticebord.herokuapp.com/api";
+        private const string defaultUrl = "https://noticebord.herokuapp.com/api";
 
-        public bool IsAuthenticated => Token is not null;
+        public bool IsLoggedIn => Token is not null;
+        public string BaseUrl { get; }
         public string? Token { get; }
 
-        public NoticebordClient(string? token, string? baseurl = default)
+        public NoticebordClient(string? token, string? baseUrl = default)
         {
-            _baseurl = baseurl ?? _baseurl;
             Token = token;
+            BaseUrl = baseUrl ?? defaultUrl;
         }
 
         public async Task<string> AuthenticateAsync(
             AuthenticateRequest request,
             CancellationToken cancellationToken = default) =>
-                await _baseurl.AppendPathSegment("tokens")
-                    .PostJsonAsync(new
-                    {
-                        email = request.Email,
-                        password = request.Password,
-                        device_name = request.DeviceName
-                    }, cancellationToken)
-                    .ReceiveString();
+            await BaseUrl.AppendPathSegment("tokens")
+                .PostJsonAsync(new
+                {
+                    email = request.Email,
+                    password = request.Password,
+                    device_name = request.DeviceName
+                }, cancellationToken)
+                .ReceiveString();
 
         public async Task<Notice> CreateNoticeAsync(
             CreateNoticeRequest request,
             CancellationToken cancellationToken = default) =>
-                await _baseurl.AppendPathSegment("notices")
-                    .WithHeader("Authorization", Token is null ? string.Empty : $"Bearer {Token}")
-                    .PostJsonAsync(new { title = request.Title, text = request.Text }, cancellationToken)
-                    .ReceiveJson<Notice>();
+            await BaseUrl.AppendPathSegment("notices")
+                .WithHeader("Authorization", Token is null ? string.Empty : $"Bearer {Token}")
+                .PostJsonAsync(new
+                {
+                    title = request.Title,
+                    body = request.Body,
+                    anonymous = request.Anonymous
+                }, cancellationToken)
+                .ReceiveJson<Notice>();
 
         public async Task<Notice> GetNoticeAsync(long id, CancellationToken cancellationToken = default) =>
-            await _baseurl.AppendPathSegment("notices")
+            await BaseUrl.AppendPathSegment("notices")
                 .AppendPathSegment(id)
                 .GetJsonAsync<Notice>(cancellationToken);
 
         public async Task<List<Notice>> GetNoticesAsync(CancellationToken cancellationToken = default) =>
-            await _baseurl.AppendPathSegment("notices")
+            await BaseUrl.AppendPathSegment("notices")
                 .GetJsonAsync<List<Notice>>(cancellationToken);
     }
 }

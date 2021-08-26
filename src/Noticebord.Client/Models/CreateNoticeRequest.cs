@@ -1,4 +1,4 @@
 namespace Noticebord.Client.Models
 {
-    public record CreateNoticeRequest(string Title, string Text);
+    public record CreateNoticeRequest(string Title, string Body, bool Anonymous);
 }

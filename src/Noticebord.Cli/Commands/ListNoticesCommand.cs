@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Noticebord.Cli.Settings;
 using Noticebord.Client;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Noticebord.Cli.Utils;
 
 namespace Noticebord.Cli.Commands
 {
@@ -18,7 +20,11 @@ namespace Noticebord.Cli.Commands
         public override async Task<int> ExecuteAsync(CommandContext context, ListNoticesSettings settings)
         {
             var notices = await AnsiConsole.Status()
-                .StartAsync("Fetching...", async ctx => await _client.GetNoticesAsync());
+                    .StartAsync("Fetching...", async ctx =>
+                    {
+                        var data = await _client.GetNoticesAsync();
+                        return data.Select(datum => Notices.AssignDefaultAuthor(datum)).ToList();
+                    });
             var table = new Table();
 
             table.AddColumn(new("[bold yellow]ID[/]"));
@@ -27,12 +33,12 @@ namespace Noticebord.Cli.Commands
             table.AddColumn(new("[bold yellow]Created At[/]"));
             table.AddColumn(new("[bold yellow]Updated At[/]"));
 
-            notices.ForEach(n => table.AddRow(
-                n.Id.ToString(),
-                n.Title,
-                n.Author.Name,
-                n.CreatedAt.ToString(),
-                n.UpdatedAt.ToString())
+            notices.ForEach(notice => table.AddRow(
+                notice.Id.ToString(),
+                notice.Title,
+                notice.Author.Name,
+                notice.CreatedAt.ToString(),
+                notice.UpdatedAt.ToString())
             );
 
             AnsiConsole.Render(table);

@@ -22,9 +22,7 @@ namespace Noticebord.Cli.Commands
 
         public override async Task<int> ExecuteAsync([NotNull]CommandContext context, [NotNull]LoginSettings settings)
         {
-            AuthenticateRequest request = !settings.Interactive
-                ? new(settings.Email!, settings.Password!, Environment.MachineName)
-                : new(
+            AuthenticateRequest request = new(
                     AnsiConsole.Prompt(new TextPrompt<string>("Enter your email address:")
                         .Validate(email => IsValidEmail(email), "[red]Email address is invalid[/]")),
                     AnsiConsole.Prompt(new TextPrompt<string>("Enter your password:").Secret()),
@@ -32,7 +30,7 @@ namespace Noticebord.Cli.Commands
                 );
 
             var token = await AnsiConsole.Status()
-                .StartAsync("Authorizing...",
+                .StartAsync("Authenticating...",
                     async ctx => await _client.AuthenticateAsync(request));
 
             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -43,29 +41,6 @@ namespace Noticebord.Cli.Commands
 
             AnsiConsole.MarkupLine($"Logged in as [bold yellow]{request.Email}.[/]");
             return 0;
-        }
-
-        public override ValidationResult Validate([NotNull]CommandContext context, [NotNull]LoginSettings settings)
-        {
-            if (settings.Interactive)
-            {
-                if (!string.IsNullOrWhiteSpace(settings.Email) ||
-                    !string.IsNullOrWhiteSpace(settings.Password))
-                    return ValidationResult.Error("Credentials cannot be specified in interactive mode.");
-
-                return base.Validate(context, settings);
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.Email))
-                return ValidationResult.Error("Email address must be provided in non-interactive mode.");
-
-            if (!IsValidEmail(settings.Email))
-                return ValidationResult.Error("Email address is invalid.");
-
-            if (string.IsNullOrWhiteSpace(settings.Password))
-                return ValidationResult.Error("Password must be provided in non-interactive mode.");
-
-            return base.Validate(context, settings);
         }
 
         private static bool IsValidEmail(string text)
