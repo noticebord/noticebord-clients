@@ -14,7 +14,7 @@ var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Appl
 if (File.Exists(path))
     token = await File.ReadAllTextAsync(path);
 
-var noticebordClient = new NoticebordClient(token);
+var noticebordClient = new NoticebordClient(token /* , "http://localhost:8000/api" */);
 
 FlurlHttp.ConfigureClient(noticebordClient.BaseUrl, client => {
     client.HttpClient.DefaultRequestHeaders.Add("Accept", "application/json");

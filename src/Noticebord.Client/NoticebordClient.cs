@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,25 +25,15 @@ namespace Noticebord.Client
             AuthenticateRequest request,
             CancellationToken cancellationToken = default) =>
             await BaseUrl.AppendPathSegment("tokens")
-                .PostJsonAsync(new
-                {
-                    email = request.Email,
-                    password = request.Password,
-                    device_name = request.DeviceName
-                }, cancellationToken)
+                .PostJsonAsync(request, cancellationToken)
                 .ReceiveString();
 
         public async Task<Notice> CreateNoticeAsync(
             CreateNoticeRequest request,
             CancellationToken cancellationToken = default) =>
             await BaseUrl.AppendPathSegment("notices")
-                .WithHeader("Authorization", Token is null ? string.Empty : $"Bearer {Token}")
-                .PostJsonAsync(new
-                {
-                    title = request.Title,
-                    body = request.Body,
-                    anonymous = request.Anonymous
-                }, cancellationToken)
+                .WithHeader("Authorization", IsLoggedIn ? string.Empty : $"Bearer {Token}")
+                .PostJsonAsync(request, cancellationToken)
                 .ReceiveJson<Notice>();
 
         public async Task<Notice> GetNoticeAsync(long id, CancellationToken cancellationToken = default) =>

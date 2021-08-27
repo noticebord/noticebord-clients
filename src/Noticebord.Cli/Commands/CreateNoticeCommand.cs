@@ -17,14 +17,20 @@ namespace Noticebord.Cli.Commands
 
         public override async Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] CreateNoticeSettings settings)
         {
-            var title = AnsiConsole.Ask<string>("Enter a title for this notice:");
-            var body = AnsiConsole.Ask<string>("Enter the body for this notice:");
-            var anonymous = false;
+            var request = new CreateNoticeRequest(
+                Title: AnsiConsole.Ask<string>("Enter a title for this notice:"),
+                Body: AnsiConsole.Ask<string>("Enter the body of this notice:"),
+                Anonymous: true,
+                Public: true
+            );
 
-            if (_client.IsLoggedIn) 
-                anonymous = AnsiConsole.Confirm("Do you want to post this notice anonymously?");
-
-            CreateNoticeRequest request = new(title, body, anonymous);
+            if (_client.IsLoggedIn) {
+                var anonymous = AnsiConsole.Confirm("Do you want to post this notice anonymously?");
+                request = request with {
+                    Anonymous = anonymous,
+                    Public = anonymous || AnsiConsole.Confirm("Do you want to post this notice publicly?")
+                };
+            }
 
             var notice = await AnsiConsole.Status()
                 .StartAsync("Creating...", async ctx => await _client.CreateNoticeAsync(request));
