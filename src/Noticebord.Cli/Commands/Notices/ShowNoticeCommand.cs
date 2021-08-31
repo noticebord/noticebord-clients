@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using Noticebord.Cli.Settings;
+using Noticebord.Cli.Settings.Notices;
 using Noticebord.Cli.Utils;
 using Noticebord.Client;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Noticebord.Cli.Commands
+namespace Noticebord.Cli.Commands.Notices
 {
     public class ShowNoticeCommand : AsyncCommand<ShowNoticeSettings>
     {
@@ -22,7 +22,7 @@ namespace Noticebord.Cli.Commands
                 .StartAsync("Fetching...", async ctx =>
                 {
                     var data = await _client.GetNoticeAsync(settings.Notice);
-                    return Notices.AssignDefaultAuthor(data);
+                    return NoticeUtils.AssignDefaultAuthor(data);
                 });
 
             AnsiConsole.MarkupLine($"[bold yellow]{notice.Title}[/]");

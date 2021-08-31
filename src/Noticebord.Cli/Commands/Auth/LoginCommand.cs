@@ -2,14 +2,14 @@ using System.IO;
 using System.Net.Mail;
 using System;
 using System.Threading.Tasks;
-using Noticebord.Cli.Settings;
+using Noticebord.Cli.Settings.Auth;
 using Noticebord.Client;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Noticebord.Client.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Noticebord.Cli.Commands
+namespace Noticebord.Cli.Commands.Auth
 {
     public class LoginCommand : AsyncCommand<LoginSettings>
     {

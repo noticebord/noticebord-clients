@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Noticebord.Cli.Settings;
+using Noticebord.Cli.Settings.Notices;
 using Noticebord.Client;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Noticebord.Cli.Utils;
 
-namespace Noticebord.Cli.Commands
+namespace Noticebord.Cli.Commands.Notices
 {
     public class ListNoticesCommand : AsyncCommand<ListNoticesSettings>
     {
@@ -23,7 +23,7 @@ namespace Noticebord.Cli.Commands
                     .StartAsync("Fetching...", async ctx =>
                     {
                         var data = await _client.GetNoticesAsync();
-                        return data.Select(datum => Notices.AssignDefaultAuthor(datum)).ToList();
+                        return data.Select(datum => NoticeUtils.AssignDefaultAuthor(datum)).ToList();
                     });
             var table = new Table();
 

@@ -1,12 +1,11 @@
 using System.IO;
 using System;
-using Noticebord.Cli.Settings;
-using Noticebord.Client;
+using Noticebord.Cli.Settings.Auth;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Noticebord.Cli.Commands
+namespace Noticebord.Cli.Commands.Auth
 {
     public class LogoutCommand : Command<LogoutSettings>
     {

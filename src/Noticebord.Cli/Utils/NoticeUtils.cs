@@ -2,7 +2,7 @@ using Noticebord.Client.Models;
 
 namespace Noticebord.Cli.Utils
 {
-    public class Notices
+    public class NoticeUtils
     {
         public static Notice AssignDefaultAuthor(Notice notice)
         {

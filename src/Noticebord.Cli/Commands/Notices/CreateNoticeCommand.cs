@@ -1,13 +1,12 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Noticebord.Cli.Settings;
+using Noticebord.Cli.Settings.Notices;
 using Noticebord.Client;
 using Noticebord.Client.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Noticebord.Cli.Commands
+namespace Noticebord.Cli.Commands.Notices
 {
     public class CreateNoticeCommand : AsyncCommand<CreateNoticeSettings>
     {
@@ -17,7 +16,7 @@ namespace Noticebord.Cli.Commands
 
         public override async Task<int> ExecuteAsync([NotNull] CommandContext context, [NotNull] CreateNoticeSettings settings)
         {
-            var request = new CreateNoticeRequest(
+            var request = new SaveNoticeRequest(
                 Title: AnsiConsole.Ask<string>("Enter a title for this notice:"),
                 Body: AnsiConsole.Ask<string>("Enter the body of this notice:"),
                 Anonymous: true,
