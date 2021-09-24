@@ -18,10 +18,10 @@ namespace Noticebord.Cli.Commands.Notices
             if (!AnsiConsole.Confirm("Are you sure you want to delete this notice?"))
                 return 0;
 
-            var notice = await AnsiConsole.Status()
-                .StartAsync("Creating...", async ctx => await _client.DeleteNoticeAsync(settings.Notice));
+            await AnsiConsole.Status()
+                .StartAsync("Deleting...", async ctx => await _client.DeleteNoticeAsync(settings.Notice));
 
-            AnsiConsole.MarkupLine($"Notice [bold yellow]#{notice.Id} - {notice.Title}[/] was deleted.");
+            AnsiConsole.MarkupLine($"Notice [bold yellow]#{settings.Notice}[/] was deleted.");
             return 0;
         }
     }

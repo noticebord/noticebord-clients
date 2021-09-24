@@ -7,14 +7,20 @@ namespace Noticebord.Client
 {
     public interface IClient
     {
-        public bool IsLoggedIn { get; }
-        public string? Token { get; }
+        bool IsLoggedIn { get; }
+        string BaseUrl { get; }
+        string? Token { get; }
 
-        public Task<string> AuthenticateAsync(AuthenticateRequest request, CancellationToken cancellationToken = default);
-        public Task<Notice> CreateNoticeAsync(SaveNoticeRequest request, CancellationToken cancellationToken = default);
-        public Task<Notice> GetNoticeAsync(long id, CancellationToken cancellationToken = default);
-        public Task<List<Notice>> GetNoticesAsync(CancellationToken cancellationToken = default);
-        public Task<Notice> UpdateNoticeAsync(long id, SaveNoticeRequest request, CancellationToken cancellationToken = default);
-        public Task<Notice> DeleteNoticeAsync(long id, CancellationToken cancellationToken = default);
+        Task<string> AuthenticateAsync(AuthenticateRequest request, CancellationToken cancellationToken = default);
+        Task<Notice> CreateNoticeAsync(SaveNoticeRequest request, CancellationToken cancellationToken = default);
+        Task<Notice> CreateTeamNoticeAsync(long team, SaveTeamNoticeRequest request, CancellationToken cancellationToken = default);
+        Task DeleteNoticeAsync(long id, CancellationToken cancellationToken = default);
+        Task DeleteTeamNoticeAsync(long team, long id, CancellationToken cancellationToken = default);
+        Task<Notice> GetNoticeAsync(long id, CancellationToken cancellationToken = default);
+        Task<List<Notice>> GetNoticesAsync(CancellationToken cancellationToken = default);
+        Task<Notice> GetTeamNoticeAsync(long team, long id, CancellationToken cancellationToken = default);
+        Task<List<Notice>> GetTeamNoticesAsync(long team, CancellationToken cancellationToken = default);
+        Task<Notice> UpdateNoticeAsync(long id, SaveNoticeRequest request, CancellationToken cancellationToken = default);
+        Task<Notice> UpdateTeamNoticeAsync(long team, long id, SaveTeamNoticeRequest request, CancellationToken cancellationToken = default);
     }
 }
