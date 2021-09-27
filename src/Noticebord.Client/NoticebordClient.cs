@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
+using Flurl.Http.Configuration;
+using Newtonsoft.Json;
 using Noticebord.Client.Models;
 
 namespace Noticebord.Client
@@ -17,8 +19,16 @@ namespace Noticebord.Client
         public string BaseUrl { get; }
         public string? Token { get; }
 
-        public NoticebordClient(string? token = default, string? baseUrl = default) =>
+        public NoticebordClient(string? token = default, string? baseUrl = default, string? userAgent = default)
+        {
             (Token, BaseUrl) = (token, baseUrl ?? DefaultBaseUrl);
+
+            FlurlHttp.ConfigureClient(BaseUrl, client =>
+            {
+                client.HttpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.HttpClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
+            });
+        }
 
         public async Task<string> AuthenticateAsync(
             AuthenticateRequest request,

@@ -9,23 +9,18 @@ using Noticebord.Cli.Settings.Notices;
 using Noticebord.Client;
 using Spectre.Console.Cli;
 
+// const string? baseUrl = "http://localhost:8000/api";
+const string? baseUrl = default;
+
 string? token = default;
 
 var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); 
 var path = Path.Combine(appDataPath, "noticebord", "token.txt");
+
 if (File.Exists(path)) token = await File.ReadAllTextAsync(path);
 
-NoticebordClient client = new(token /* , "http://localhost:8000/api" */);
-
-// TODO Move this into client library
-FlurlHttp.ConfigureClient(client.BaseUrl, client =>
-{
-    client.HttpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-    client.HttpClient.DefaultRequestHeaders.Add("User-Agent", "Noticebord.Cli");
-});
-
 var services = new ServiceCollection();
-services.AddSingleton<IClient>(client);
+services.AddSingleton<IClient>(new NoticebordClient(token , baseUrl, "Noticebord.Cli"));
 
 var app = new CommandApp(new TypeRegistrar(services));
 
