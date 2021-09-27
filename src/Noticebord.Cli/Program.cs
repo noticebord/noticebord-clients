@@ -15,8 +15,6 @@ var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.Applicatio
 var path = Path.Combine(appDataPath, "noticebord", "token.txt");
 if (File.Exists(path)) token = await File.ReadAllTextAsync(path);
 
-Console.WriteLine(token);
-
 NoticebordClient client = new(token /* , "http://localhost:8000/api" */);
 
 // TODO Move this into client library
